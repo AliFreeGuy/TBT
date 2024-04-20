@@ -1,0 +1,86 @@
+version: "3"
+
+services:
+  bot:
+    build: .
+    restart: always
+    container_name: ${BOT_NAME}
+    environment:
+    
+      # BOT
+      BOT_NAME: ${BOT_NAME}
+      API_ID: ${API_ID}
+      API_HASH: ${API_HASH}
+      BOT_TOKEN: ${BOT_TOKEN}
+
+      # REDIS
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASS: ${REDIS_PASS}
+      REDIS_DB: 0
+
+    networks:
+      - bot
+    volumes:
+      - bot_work_dir:${WORK_DIR}
+    depends_on:
+      - redis
+
+
+
+
+  redis:
+    restart: always
+    container_name: redis
+    image: redis:alpine
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis:/data
+    networks:
+      - bot
+
+
+
+
+
+  # postgres:
+  #   container_name: postgres
+  #   image: postgres:alpine
+  #   restart: always
+  #   environment:
+  #     POSTGRES_USER: ${DB_USER}
+  #     POSTGRES_PASSWORD: ${DB_PASS}
+  #     POSTGRES_DB: ${DB_NAME}
+  #   volumes:
+  #     - postgres:/var/lib/postgresql/data
+  #   networks:
+  #     - bot
+
+
+
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   container_name: pgadmin
+  #   depends_on:
+  #     - postgres
+  #   ports:
+  #     - "5051:80"
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+  #     PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASS}
+  #   restart: always
+  #   volumes:
+  #     - pgadmin:/var/lib/pgadmin:rw
+  #   networks:
+  #     - bot
+
+networks:
+  bot:
+    name: ${BOT_NAME}
+
+volumes:
+  bot_work_dir:
+  redis:
+  # postgres:
+  # pgadmin:
